@@ -1,41 +1,44 @@
-name: myapp
-version: "0.1.0"
+name: cargo-ec
+bin_name: cargo
+version: "0.1.6"
 author: Mason Fischer <mason@kissr.co>
 about: A build tool for Ellipticoin smart contracts
 subcommands:
-    - new:
-        about: Creates a new Ellipticoin smart contract
-        version: "0.0.1"
-        args:
-            - template:
-                short: t
-                value_name: TEMPLATE
-                help: The project template to copy from
-                takes_value: true
-            - name:
-                help: The name of the new project
-                required: true
-                index: 1
-    - build:
-        about: Build a Smart Contract
-        args:
-            - cargo_args:
-                help: Arguments to be passed to Cargo
-                multiple: true
-    - deploy:
-        about: Deploy a Smart Contract
-        args:
-            - private-key:
-                short: pk
-                long: private-key
-                value_name: PRIVATE_KEY
-                help: Deploy using this private key
-                takes_value: true
-                required: true
-            - contract_name:
-                help: The name the contract
-            - path:
-                help: path of the file to deploy
-            - constructor_arguments:
-                help: Arguments to be passed to Cargo
-                multiple: true
+    - ec:
+        subcommands:
+            - new:
+                about: Creates a new Ellipticoin smart contract
+                version: "0.0.1"
+                args:
+                    - template:
+                        short: t
+                        value_name: TEMPLATE
+                        help: The project template to copy from
+                        takes_value: true
+                    - name:
+                        help: The name of the new project
+                        required: true
+                        index: 1
+            - build:
+                about: Build a Smart Contract
+                args:
+                    - cargo_args:
+                        help: Arguments to be passed to Cargo
+                        multiple: true
+            - deploy:
+                about: Deploy a Smart Contract
+                args:
+                    - private-key:
+                        short: pk
+                        long: private-key
+                        value_name: PRIVATE_KEY
+                        help: Deploy using this private key
+                        takes_value: true
+                        required: true
+                    - contract_name:
+                        help: The name the contract
+                    - path:
+                        help: path of the file to deploy
+                    - constructor_arguments:
+                        help: Arguments to be passed to Cargo
+                        multiple: true
