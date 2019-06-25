@@ -1,0 +1,20 @@
+[package]
+name = "cargo-ec"
+description = "Cargo plugin for building and deploying smart contracts to the Ellipticoin network"
+version = "0.1.1"
+authors = ["Mason Fischer <mason@kissr.co>"]
+edition = "2018"
+license = "MIT/Apache-2.0"
+
+[[bin]]
+name = "cargo-ec"
+path = "src/main.rs"
+
+[dependencies]
+base64 = "0.10.1"
+clap = {version = "2.33", features = ["yaml"]}
+ec-client = "0.1.0"
+failure = "0.1.5"
+serde = "1.0.92"
+toml = "0.5.1"
+wasm-snip = {version = "0.1.5", default-features = false }
