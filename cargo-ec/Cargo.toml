@@ -1,7 +1,7 @@
 [package]
 name = "cargo-ec"
 description = "Cargo plugin for building and deploying smart contracts to the Ellipticoin network"
-version = "0.1.18"
+version = "0.1.8"
 authors = ["Mason Fischer <mason@kissr.co>"]
 edition = "2018"
 license = "MIT/Apache-2.0"
@@ -11,6 +11,8 @@ name = "cargo-ec"
 path = "src/main.rs"
 
 [dependencies]
+lazy-static-include = "2.0.1"
+lazy_static = "1.3.0"
 base64 = "0.10.1"
 clap = {version = "2.33", features = ["yaml"]}
 ec-client = "0.1.0"

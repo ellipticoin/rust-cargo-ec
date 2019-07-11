@@ -8,7 +8,7 @@ enum Namespace {
 }
 
 #[export]
-mod simple_token {
+mod $PACKAGE_NAME {
     pub fn constructor(initial_supply: u64) {
         set_balance(&sender(), initial_supply)
     }

@@ -17,4 +17,4 @@ extern crate ellipticoin_test_framework;
 #[cfg(test)]
 extern crate mock_ellipticoin as ellipticoin;
 mod error;
-pub mod simple_token;
+pub mod $PACKAGE_NAME;

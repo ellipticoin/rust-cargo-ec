@@ -1,5 +1,5 @@
 [package]
-name = "simple_token"
+name = "$PACKAGE_NAME"
 version = "0.1.0"
 edition = "2018"
 
@@ -17,12 +17,12 @@ panic = 'abort'
 incremental = false
 
 [dev-dependencies]
-ellipticoin-test-framework = {"path" = "../../../rust-ellipticoin-test-framework"}
-mock-ellipticoin = {"path" = "../../../rust-mock-ellipticoin"}
+ellipticoin-test-framework = "0.1.2"
+mock-ellipticoin = "0.1.1"
 
 [dependencies]
 lazy_static = "1.3.0"
-ellipticoin = {"path" = "../../../rust-ellipticoin"}
+ellipticoin = "0.1.5"
 wee_alloc = { git = "https://github.com/rustwasm/wee_alloc" }
-wasm-rpc = {"path" = "../../../rust-wasm-rpc/wasm-rpc"}
-wasm-rpc-macros = {"path" = "../../../rust-wasm-rpc/wasm-rpc-macros"}
+wasm-rpc = "0.2.11"
+wasm-rpc-macros = "0.2.11"

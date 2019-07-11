@@ -1,5 +1,4 @@
-#[macro_use]
-extern crate clap;
+#[macro_use] extern crate clap;
 extern crate toml;
 extern crate failure;
 
@@ -14,14 +13,15 @@ fn main() -> Result<(), Error> {
     let matches = App::from_yaml(yaml)
         .setting(clap::AppSettings::AllowExternalSubcommands)
         .get_matches();
-    match matches.subcommand_name() {
-        Some("new") => new(matches
+    let ec_matches = matches.subcommand_matches("ec").unwrap();
+    match ec_matches.subcommand_name() {
+        Some("new") => new(ec_matches
             .subcommand_matches("new")
             .unwrap()
             .value_of("name")
             .unwrap()),
         Some("build") => {
-            if let Some(args) = matches
+            if let Some(args) = ec_matches
                 .subcommand_matches("build")
                 .unwrap()
                 .values_of("cargo_args")
@@ -32,18 +32,18 @@ fn main() -> Result<(), Error> {
             }
         }
         Some("deploy") => {
-                let private_key = base64::decode(&matches.subcommand_matches("deploy")
+                let private_key = base64::decode(&ec_matches.subcommand_matches("deploy")
                 .unwrap()
                 .value_of("private-key").unwrap()).expect("invalid private key");
-                let path = &matches.subcommand_matches("deploy")
+                let path = &ec_matches.subcommand_matches("deploy")
                     .unwrap()
                     .value_of("path")
                     .unwrap();
-                let contract_name = &matches.subcommand_matches("deploy")
+                let contract_name = &ec_matches.subcommand_matches("deploy")
                     .unwrap()
                     .value_of("contract_name")
                     .unwrap();
-                let constructor_arguments = {if let Some(args) = matches
+                let constructor_arguments = {if let Some(args) = ec_matches
                     .subcommand_matches("deploy")
                         .unwrap()
                         .values_of("constructor_arguments")
@@ -65,6 +65,7 @@ fn build(build_args: Vec<&str>) -> Result<(), Error> {
         .arg("build")
         .arg("--target")
         .arg("wasm32-unknown-unknown")
+        .arg("--release")
         .args(build_args)
         .stdout(Stdio::piped())
         .spawn()?
@@ -78,7 +79,40 @@ fn build(build_args: Vec<&str>) -> Result<(), Error> {
         .filter_map(|line| line.ok())
         .for_each(|line| println!("{}", line));
 
+    snip();
     Ok(())
+}
+
+#[derive(Deserialize, Debug)]
+struct Config {
+    package: Package,
+}
+
+#[derive(Deserialize, Debug)]
+struct Package {
+    name: String,
+}
+
+fn snip() {
+        let config: Config = toml::from_str(&std::fs::read_to_string("Cargo.toml").unwrap()).unwrap();
+        let mut path = std::path::PathBuf::new();
+        path.push("target");
+        path.push("wasm32-unknown-unknown");
+        path.push("release");
+        path.push(config.package.name.clone());
+        path.set_extension("wasm");
+        let output = wasm_snip::snip(wasm_snip::Options {
+            input: path.clone(),
+            functions: vec![],
+            patterns: vec![],
+            snip_rust_fmt_code: true,
+            snip_rust_panicking_code: true,
+            skip_producers_section: false
+        }).unwrap();
+        path.pop();
+        path.push([config.package.name.clone(), "-min".to_string()].concat());
+        path.set_extension("wasm");
+    output.emit_wasm_file(path).unwrap();
 }
 
 fn deploy(
@@ -107,7 +141,29 @@ fn deploy(
     Ok(())
 }
 
+
 fn new(name: &str) -> Result<(), Error> {
+    let cargo_path = [name, "Cargo.toml"].iter().collect::<std::path::PathBuf>().into_os_string().into_string().unwrap();
+    let src_path = [name, "src"].iter().collect::<std::path::PathBuf>().into_os_string().into_string().unwrap();
+    let lib_path = [name, "src", "lib.rs"].iter().collect::<std::path::PathBuf>().into_os_string().into_string().unwrap();
+    let error_path = [name, "src", "error.rs"].iter().collect::<std::path::PathBuf>().into_os_string().into_string().unwrap();
+    let main_path = [name, "src", &[name, ".rs"].join("")].iter().collect::<std::path::PathBuf>().into_os_string().into_string().unwrap();
+    std::fs::create_dir(name).unwrap();
+    std::fs::create_dir(src_path).unwrap();
+    let cargo_str = include_str!("template/Cargo.toml.txt");
+    let  lib_str = include_str!("template/lib.rs");
+    let  main_str = include_str!("template/main.rs");
+    let error_str = include_str!("template/error.rs");
+
+    std::fs::write(cargo_path, render_template(cargo_str, name)).unwrap();
+    std::fs::write(lib_path, render_template(lib_str, name)).unwrap();
+    std::fs::write(main_path, render_template(main_str, name)).unwrap();
+    std::fs::write(error_path, error_str).unwrap();
+
     println!("Created {}", name);
     Ok(())
+}
+
+fn render_template(s: &str, package_name: &str) -> String {
+    s.replace("$PACKAGE_NAME", package_name)
 }
