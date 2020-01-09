@@ -1,5 +1,5 @@
-pub use wasm_rpc::error::{Error, ErrorStruct};
-pub const INSUFFICIENT_FUNDS: ErrorStruct<'static> = Error {
-    code: 1,
-    message: "insufficient funds",
-};
+pub use wasm_rpc::error::Error;
+lazy_static! {
+    pub static ref INSUFFICIENT_FUNDS: Error =
+        (1, "insufficient funds".to_string());
+}

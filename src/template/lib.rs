@@ -11,10 +11,12 @@ extern crate alloc;
 extern crate ellipticoin;
 extern crate wasm_rpc;
 extern crate wasm_rpc_macros;
+#[macro_use]
+extern crate lazy_static;
 
 #[cfg(test)]
 extern crate ellipticoin_test_framework;
 #[cfg(test)]
 extern crate mock_ellipticoin as ellipticoin;
 mod error;
-pub mod $PACKAGE_NAME;
+pub mod doubler_coin;

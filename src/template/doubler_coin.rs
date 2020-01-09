@@ -8,7 +8,7 @@ enum Namespace {
 }
 
 #[export]
-mod $PACKAGE_NAME {
+mod doubler_coin {
     pub fn constructor(initial_supply: u64) {
         set_balance(&sender(), initial_supply)
     }
@@ -19,7 +19,7 @@ mod $PACKAGE_NAME {
             set_balance(&to, get_balance(&to) + amount);
             Ok(Value::Null)
         } else {
-            Err(error::INSUFFICIENT_FUNDS)
+            Err(error::INSUFFICIENT_FUNDS.clone())
         }
     }
 
@@ -39,28 +39,28 @@ mod $PACKAGE_NAME {
 mod tests {
     use super::*;
     use ellipticoin::set_sender;
-    use ellipticoin_test_framework::{alice, bob};
+    use ellipticoin_test_framework::{ALICE, BOB};
 
     #[test]
     fn test_constructor() {
-        set_sender(alice());
+        set_sender(ALICE.to_vec());
         constructor(100);
-        assert_eq!(get_balance(&alice()), 100);
+        assert_eq!(get_balance(&ALICE.to_vec()), 100);
     }
 
     #[test]
     fn test_transfer() {
-        set_sender(alice());
+        set_sender(ALICE.to_vec());
         constructor(100);
-        transfer(bob(), 20).unwrap();
-        assert_eq!(get_balance(&alice()), 80);
-        assert_eq!(get_balance(&bob()), 20);
+        transfer(BOB.to_vec(), 20).unwrap();
+        assert_eq!(get_balance(&ALICE.to_vec()), 80);
+        assert_eq!(get_balance(&BOB.to_vec()), 20);
     }
 
     #[test]
     fn test_transfer_insufficient_funds() {
-        set_sender(alice());
+        set_sender(ALICE.to_vec());
         constructor(100);
-        assert!(transfer(bob(), 120).is_err());
+        assert!(transfer(BOB.to_vec(), 120).is_err());
     }
 }
